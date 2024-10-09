@@ -11,16 +11,16 @@ api_key = os.getenv("OPENAI_API_KEY")
 
 ## encode image
 def encode_image(image_path: str) -> str:
-  '''
-  Encode an image file into a base64 string.
-  Args:
-      image_path (str): The path to the image file.
+    '''
+    Encode an image file into a base64 string.
+    Args:
+        image_path (str): The path to the image file.
 
-  Returns:
-      str: The base64 encoded image.
-  '''
-  with open(image_path, "rb") as image_file:
-    return base64.b64encode(image_file.read()).decode('utf-8')
+    Returns:
+        str: The base64 encoded image.
+    '''
+    with open(image_path, "rb") as image_file:
+        return base64.b64encode(image_file.read()).decode('utf-8')
 
 def read_image(pdf_path: str, image_quality: int = 60, limit: int = 10) -> str:
     '''
@@ -62,19 +62,19 @@ def read_image(pdf_path: str, image_quality: int = 60, limit: int = 10) -> str:
             "model": "gpt-4o-mini",
             "messages": [
                 {
-                "role": "user",
-                "content": [
-                    {
-                    "type": "text",
-                    "text": "Turn this image into text. Return the text in JSON format."
-                    },
-                    {
-                    "type": "image_url",
-                    "image_url": {
-                        "url": f"data:image/jpeg;base64,{base64_image}"
-                    }
-                    }
-                ]
+                    "role": "user",
+                    "content": [
+                        {
+                        "type": "text",
+                        "text": "Turn this image into text. Return the text in JSON format."
+                        },
+                        {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": f"data:image/jpeg;base64,{base64_image}"
+                        }
+                        }
+                    ]
                 }
             ]
         }
