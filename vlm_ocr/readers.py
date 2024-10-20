@@ -22,14 +22,16 @@ def encode_image(image_path: str) -> str:
     with open(image_path, "rb") as image_file:
         return base64.b64encode(image_file.read()).decode('utf-8')
 
-def read_image(pdf_path: str, image_quality: int = 60, limit: int = 10) -> str:
+def openai_read(pdf_path: str, image_quality: int = 60, limit: int = 10, model: str = 'gpt-4o-mini') -> str:
     '''
-    Read a pdf and turn it into text using OpenAI's API.
+    Read a pdf using OpenAI's models and turn it into text.
+    Default model is gpt-4o-mini.
 
     Args:
         pdf_path (str): The path to the pdf file.
-        image_quality (int): The quality of the image to convert from the pdf. (greatly affects quality/cost)
-        limit (int): The number of pages to process.
+        image_quality (int): The quality of the image to convert from the pdf. (greatly affects quality/cost, default 60)
+        limit (int): The number of pages to process. (default 10 pages)
+        model (str): The model to use. (default: gpt-4o-mini)
 
     Returns:
         str: The text from the pdf.
@@ -41,7 +43,7 @@ def read_image(pdf_path: str, image_quality: int = 60, limit: int = 10) -> str:
     for i, image in enumerate(images):
         print(f"Processing page {i + 1}")
 
-        ## limit the number of pages processed
+        ## limit the number of pages processed\
         if limit:
             if i+1 > limit:
                 break
@@ -59,7 +61,7 @@ def read_image(pdf_path: str, image_quality: int = 60, limit: int = 10) -> str:
         }
 
         payload = {
-            "model": "gpt-4o-mini",
+            "model": model,
             "messages": [
                 {
                     "role": "user",
@@ -89,3 +91,6 @@ def read_image(pdf_path: str, image_quality: int = 60, limit: int = 10) -> str:
     text = '\n'.join(responses)
     clean_text = text.replace('```', '').replace('json', '').strip()
     return clean_text
+
+def anthropic_read():
+    return

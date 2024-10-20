@@ -3,3 +3,5 @@
 alias
 /conda
 *.pdf
+/dist
+/vlm_ocr.egg-info
