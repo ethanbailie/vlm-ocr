@@ -3,6 +3,7 @@ from pdf2image import convert_from_path
 import base64
 import requests
 import os
+import anthropic
 
 load_dotenv()
 
@@ -43,7 +44,7 @@ def openai_read(pdf_path: str, image_quality: int = 60, limit: int = 10, model: 
     for i, image in enumerate(images):
         print(f"Processing page {i + 1}")
 
-        ## limit the number of pages processed\
+        ## limit the number of pages processed
         if limit:
             if i+1 > limit:
                 break
@@ -92,5 +93,49 @@ def openai_read(pdf_path: str, image_quality: int = 60, limit: int = 10, model: 
     clean_text = text.replace('```', '').replace('json', '').strip()
     return clean_text
 
-def anthropic_read():
-    return
+def anthropic_read(pdf_path: str, image_quality: int = 60, limit: int = 10, model: str = 'claude-3-haiku-20240307') -> str:
+    responses = []
+
+    images = convert_from_path(pdf_path, dpi=image_quality)
+    for i, image in enumerate(images):
+        print(f"Processing page {i + 1}")
+
+        ## limit the number of pages processed
+        if limit:
+            if i+1 > limit:
+                break
+        
+        image.save(f'page_{i + 1}.png', 'PNG')
+        image_path = f"page_{i + 1}.png"
+
+        ## encode image
+        base64_image = encode_image(image_path)
+    
+        client = anthropic.Anthropic()
+        message = client.messages.create(
+            model=model,
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "image",
+                            "source": {
+                                "type": "base64",
+                                "media_type": "image/jpeg",
+                                "data": base64_image,
+                            },
+                        },
+                        {
+                            "type": "text",
+                            "text": "Turn this image into text. Return the text in JSON format."
+                        }
+                    ],
+                }
+            ],
+        )
+
+        responses.append(message.content[0].text)
+
+        ## get rid of created images
+        os.remove(image_path)
