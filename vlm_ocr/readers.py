@@ -7,8 +7,7 @@ import anthropic
 
 load_dotenv()
 
-## get openai api key
-api_key = os.getenv("OPENAI_API_KEY")
+
 
 ## encode image
 def encode_image(image_path: str) -> str:
@@ -37,6 +36,9 @@ def openai_read(pdf_path: str, image_quality: int = 60, limit: int = 10, model: 
     Returns:
         str: The text from the pdf.
     '''
+    ## get openai api key
+    api_key = os.getenv("OPENAI_API_KEY")
+
     responses = []
 
     ## turn pdf into images
@@ -94,6 +96,16 @@ def openai_read(pdf_path: str, image_quality: int = 60, limit: int = 10, model: 
     return clean_text
 
 def anthropic_read(pdf_path: str, image_quality: int = 60, limit: int = 10, model: str = 'claude-3-haiku-20240307') -> str:
+    '''
+    Read a pdf using Anthropic's models and turn it into text.
+    Default model is claude-3-haiku-20240307.
+
+    Args:
+        pdf_path (str): The path to the pdf file.
+        image_quality (int): The quality of the image to convert from the pdf. (greatly affects quality/cost, default 60)
+        limit (int): The number of pages to process. (default 10 pages)
+        model (str): The model to use. (default: claude-3-haiku-20240307)
+    '''
     responses = []
 
     images = convert_from_path(pdf_path, dpi=image_quality)
