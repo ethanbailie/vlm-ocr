@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="vlm-ocr",
-    version="0.1.4",
+    version="0.1.41",
     author="Ethan Bailie",
     author_email="eabailie@uwaterloo.ca",
     description="A library for OCR using VLMs. Currently supports OpenAI and Anthropic models. Will work on Unix operating systems out of the box, some tweaking may be needed for Windows.",

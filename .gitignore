@@ -5,3 +5,4 @@ alias
 *.pdf
 /dist
 /vlm_ocr.egg-info
+/build
