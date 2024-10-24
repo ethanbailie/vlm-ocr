@@ -22,7 +22,7 @@ def encode_image(image_path: str) -> str:
     with open(image_path, "rb") as image_file:
         return base64.b64encode(image_file.read()).decode('utf-8')
 
-def openai_read(pdf_path: str, image_quality: int = 60, limit: int = 10, model: str = 'gpt-4o-mini') -> str:
+def openai_read(pdf_path: str, image_quality: int = 60, limit: int = 10, model: str = 'gpt-4o-mini') -> list[str]:
     '''
     Read a pdf using OpenAI's models and turn it into text.
     Default model is gpt-4o-mini.
@@ -85,17 +85,19 @@ def openai_read(pdf_path: str, image_quality: int = 60, limit: int = 10, model: 
         }
 
         response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
-        responses.append(response.json()["choices"][0]["message"]["content"])
+
+        text = response.json()["choices"][0]["message"]["content"]
+        clean_text = text.replace('```', '').replace('json', '').strip()
+
+        responses.append(clean_text)
 
         ## get rid of created images
         os.remove(image_path)
 
     ## combine responses and clean up the text
-    text = '\n'.join(responses)
-    clean_text = text.replace('```', '').replace('json', '').strip()
-    return clean_text
+    return responses
 
-def anthropic_read(pdf_path: str, image_quality: int = 60, limit: int = 10, model: str = 'claude-3-haiku-20240307') -> str:
+def anthropic_read(pdf_path: str, image_quality: int = 60, limit: int = 10, model: str = 'claude-3-haiku-20240307') -> list[str]:
     '''
     Read a pdf using Anthropic's models and turn it into text.
     Default model is claude-3-haiku-20240307.
@@ -147,7 +149,12 @@ def anthropic_read(pdf_path: str, image_quality: int = 60, limit: int = 10, mode
             ],
         )
 
-        responses.append(message.content[0].text)
+        text = message.content[0].text
+        clean_text = text.replace('```', '').replace('json', '').strip()
+
+        responses.append(clean_text)
 
         ## get rid of created images
         os.remove(image_path)
+    
+    return responses
